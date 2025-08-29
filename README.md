@@ -3,10 +3,8 @@
 This is a complete solution for the assessment. It includes:
 - **ASP.NET Core Web API (.NET 8)** with **Entity Framework Core (SQL Server)**.
 - CRUD for Users, search (name/email/phone), **bulk delete**, and **picture upload**.
-- **Swagger** docs at `/swagger`.
-- Minimal **HTML/JS frontend** to call the API.
+- Minimal **bootstrap/JS frontend** to call the API.
 - **xUnit tests** for the service layer.
-- Postman collection in `postman_collection/`.
 
 ## Quick start
 
@@ -24,12 +22,6 @@ This is a complete solution for the assessment. It includes:
    dotnet build
    dotnet run
    ```
-
-4. **Open Swagger**
-   - Navigate to http://localhost:5169/swagger
-
-5. **Open Frontend**
-   - Simply open `frontend/index.html` in your browser. Ensure CORS origin matches API URL in `frontend/script.js`.
 
 ## Database schema (MSSQL)
 
