@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lafarge Users</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Lafarge Users</h1>
+
+  <section class="create">
+    <h2>Create User</h2>
+    <form id="createForm">
+      <input name="FirstName" placeholder="First Name" required>
+      <input name="LastName" placeholder="Last Name" required>
+      <input name="Email" placeholder="Email" type="email" required>
+      <input name="Phone" placeholder="Phone">
+      <input name="Gender" placeholder="Gender">
+      <input name="DateOfBirth" placeholder="DateOfBirth (YYYY-MM-DD)">
+      <input name="Nationality" placeholder="Nationality">
+      <select name="Role">
+        <option value="User">User</option>
+        <option value="Admin">Admin</option>
+      </select>
+      <input name="picture" type="file" accept="image/*">
+      <button type="submit">Create</button>
+    </form>
+  </section>
+
+  <section class="search">
+    <h2>Search</h2>
+    <input id="q" placeholder="name/email/phone">
+    <button id="btnSearch">Search</button>
+    <div id="results"></div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+body{font-family:system-ui,Arial,sans-serif;margin:2rem;line-height:1.5}
+h1{margin-bottom:1rem}
+form{display:grid;gap:.5rem;max-width:480px}
+input,select,button{padding:.5rem;font-size:1rem}
+#results{margin-top:1rem}
+.card{border:1px solid #ddd;padding:1rem;margin:.5rem 0;border-radius:.5rem}
+.card img{max-width:100px;display:block}
+.actions button{margin-right:.5rem}

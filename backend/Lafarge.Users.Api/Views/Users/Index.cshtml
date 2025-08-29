@@ -1,0 +1,307 @@
+﻿@using Lafarge.Users.Api.Dtos
+@model PagedResult<Lafarge.Users.Api.Dtos.UserReadDto>
+
+
+@{
+    ViewBag.Title = "Manage Users";
+}
+
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+
+  
+</head>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Manage Users</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Create User</button>
+    </div>
+
+    <!-- Search -->
+    <form method="get" asp-action="Index" class="input-group mb-3">
+        <input type="text" name="q" class="form-control" placeholder="Search by name, email, phone..." value="@ViewBag.SearchQuery" />
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+    </form>
+
+   @*  <form asp-action="DeleteMultiple" method="post"> *@
+      @using (Html.BeginForm("DeleteMultiple", "Users", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-light">
+            <tr>
+                <th><input type="checkbox" id="selectAll" /></th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Nationality</th>
+                <th>DOB</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.Items)
+            {
+                <tr>
+                    <td><input type="checkbox" name="ids" value="@user.Id" /></td>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td>@user.Email</td>
+                    <td>@user.Phone</td>
+                    <td>@user.Gender</td>
+                     <td>@user.Nationality</td>
+                    <td>@(user.DateOfBirth?.ToString("yyyy-MM-dd"))</td>
+                    <td>@user.Role</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-warning"
+                                data-bs-toggle="modal" data-bs-target="#editModal"
+                                data-id="@user.Id"
+                                data-firstname="@user.FirstName"
+                                data-lastname="@user.LastName"
+                                data-email="@user.Email"
+                                data-phone="@user.Phone"
+                                data-gender="@user.Gender"
+                                data-nationality="@user.Nationality"
+                                data-dob="@(user.DateOfBirth?.ToString("yyyy-MM-dd"))"
+                                data-role="@user.Role">
+                            Edit
+                        </button>
+
+                        @* Single delete button submits the same bulk form with only this ID *@
+                        <button type="submit" name="ids" value="@user.Id" 
+                                class="btn btn-sm btn-danger"
+                                onclick="return confirm('Are you sure you want to delete this user?');">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <button type="submit" class="btn btn-danger">Delete Selected</button>
+      
+           <!-- Pagination -->
+            <nav>
+                <ul class="pagination">
+                    @for (int i = 1; i <= Math.Ceiling((double)Model.Total / Model.PageSize); i++)
+                    {
+                        <li class="page-item @(i == Model.Page ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-q="@ViewBag.SearchQuery">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+    </div>
+}
+
+   @*  </form> *@
+</div>
+
+
+
+
+<!-- Create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            @* <form asp-controller="Users" asp-action="Create" method="post" enctype="multipart/form-data" id="createForm"> *@
+                @using (Html.BeginForm("Create", "Users",FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Create User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FirstName" class="form-label">FirstName</label>
+                        <input asp-for="FirstName" name="FirstName" class="form-control" required />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="LastName" class="form-label">LastName</label>
+                        <input asp-for="LastName" name="LastName" class="form-control" required />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" name="Email" type="email" class="form-control" required />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label">Phone</label>
+                        <input asp-for="Phone" name="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Gender" class="form-label">Gender</label>
+                        <select asp-for="Gender" name="Gender" class="form-select">
+                            <option value="">Select</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+                     <div class="col-md-6">
+                        <label class="form-label">Nationality</label>
+                        <input name="Nationality" id="nationality" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DateOfBirth" class="form-label">DateOfBirth</label>
+                        <input asp-for="DateOfBirth" name="DateOfBirth" type="date" class="form-control" />
+                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Role" class="form-label">Role</label>
+                        <select asp-for="Role" name="Role" class="form-select">
+                            <option value="0">User</option>
+                            <option value="1">Admin</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Picture</label>
+                        <input type="file" name="picture" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            @* </form> *@
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            @using (Html.BeginForm("Edit", "Users", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <input type="hidden" name="Id" id="editUserId" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">First Name</label>
+                        <input name="FirstName" id="editFirstName" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Last Name</label>
+                        <input name="LastName" id="editLastName" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="Email" id="editEmail" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input name="Phone" id="editPhone" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Gender</label>
+                        <select name="Gender" id="editGender" class="form-select">
+                            <option value="">Select</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Nationality</label>
+                        <input name="Nationality" id="editNationality" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">DOB</label>
+                        <input type="date" name="DateOfBirth" id="editDob" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Role</label>
+                        <select name="Role" id="editRole" class="form-select">
+                            <option value="0">User</option>
+                            <option value="1">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Update</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+       // Select/Deselect All
+        document.getElementById("selectAll").addEventListener("change", function () {
+            document.querySelectorAll("input[name='ids']").forEach(cb => cb.checked = this.checked);
+        });
+
+        // Fill edit modal with user data    
+        var editModal = document.getElementById('editModal');
+       
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            document.getElementById("editUserId").value = button.getAttribute("data-id");
+            document.getElementById("editFirstName").value = button.getAttribute("data-firstname");
+            document.getElementById("editLastName").value = button.getAttribute("data-lastname");
+            document.getElementById("editEmail").value = button.getAttribute("data-email");
+            document.getElementById("editPhone").value = button.getAttribute("data-phone");
+            document.getElementById("editGender").value = button.getAttribute("data-gender");
+            document.getElementById("editDob").value = button.getAttribute("data-dob");
+            document.getElementById("editRole").value = button.getAttribute("data-role");
+            document.getElementById("editNationality").value = button.getAttribute("data-nationality");
+        });
+
+
+         
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '@TempData["ErrorMessage"]'
+            });
+            </text>
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '@TempData["SuccessMessage"]'
+            });
+            </text>
+        }
+ 
+    </script>
+

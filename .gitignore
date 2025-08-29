@@ -1,0 +1,9 @@
+.vs/
+bin/
+obj/
+*.user
+*.swp
+*.suo
+*.userosscache
+*.sln.docstates
+backend/Lafarge.Users.Api/wwwroot/uploads/*
